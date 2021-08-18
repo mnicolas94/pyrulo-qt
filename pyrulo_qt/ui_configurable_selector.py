@@ -18,6 +18,7 @@ class ConfigurableSelector(QtWidgets.QWidget):
 		self._current_index = 0
 
 		layout = QtWidgets.QVBoxLayout(self)
+		layout.setContentsMargins(0, 0, 0, 0)
 		self.setLayout(layout)
 
 		self._combobox = QtWidgets.QComboBox(self)

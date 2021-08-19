@@ -21,13 +21,30 @@ class ConfigurableSelector(QtWidgets.QWidget):
 		layout.setContentsMargins(0, 0, 0, 0)
 		self.setLayout(layout)
 
+		self._toggle_button = QtWidgets.QToolButton()
+		self._toggle_button.setStyleSheet("QToolButton { border: none; }")
+		self._toggle_button.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
+		self._toggle_button.setArrowType(QtCore.Qt.RightArrow)
+		self._toggle_button.setCheckable(True)
+		self._toggle_button.setChecked(False)
+		self._toggle_button.clicked.connect(self._collapse_or_expand)
+
 		self._combobox = QtWidgets.QComboBox(self)
 		self._combobox.currentIndexChanged.connect(self._selection_changed)
 		self._combobox.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-		self.layout().addWidget(self._combobox)
+		# self.layout().addWidget(self._combobox)
+
+		combobox_containter = QtWidgets.QWidget()
+		combobox_containter_layout = QtWidgets.QHBoxLayout()
+		combobox_containter_layout.setContentsMargins(0, 0, 0, 0)
+		combobox_containter.setLayout(combobox_containter_layout)
+		combobox_containter_layout.addWidget(self._toggle_button)
+		combobox_containter_layout.addWidget(self._combobox)
+		layout.addWidget(combobox_containter)
 
 		self._conf_properties = SettingsAreaWidget()
 		self._conf_properties.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+		self._conf_properties.hide()
 		self.layout().addWidget(self._conf_properties)
 
 		self._populate_objects()
@@ -66,3 +83,32 @@ class ConfigurableSelector(QtWidgets.QWidget):
 			return self._objects[self._current_index]
 		else:
 			return None
+
+	@QtCore.Slot()
+	def _collapse_or_expand(self, expand):
+		arrow_type = QtCore.Qt.DownArrow if expand else QtCore.Qt.RightArrow
+		self._toggle_button.setArrowType(arrow_type)
+		if expand:
+			self._conf_properties.show()
+		else:
+			self._conf_properties.hide()
+
+
+if __name__ == '__main__':
+	import sys
+	from PySide2.QtWidgets import QApplication
+	from PySide2.QtWidgets import QWidget, QVBoxLayout
+
+	app = QApplication(sys.argv)
+
+	window = QWidget()
+	window.setMinimumSize(100, 100)
+	layout = QVBoxLayout()
+	window.setLayout(layout)
+
+	selector = ConfigurableSelector("iu")
+	layout.addWidget(selector)
+
+	window.show()
+
+	sys.exit(app.exec_())

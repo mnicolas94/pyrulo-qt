@@ -94,7 +94,6 @@ class ConfigurableSelector(QtWidgets.QWidget):
 
 	def _enable_collapsible_feature(self):
 		self._toggle_button.show()
-		self._conf_properties.show()
 
 	@QtCore.Slot()
 	def _collapse_or_expand(self, expand):

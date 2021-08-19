@@ -49,6 +49,12 @@ class ConfigurableSelector(QtWidgets.QWidget):
 
 		self._populate_objects()
 
+	def current_object(self):
+		if len(self._objects) > 0:
+			return self._objects[self._current_index]
+		else:
+			return None
+
 	def populate_class(self, dir_key):
 		"""
 		Inicializar el combobox con una nueva clase.
@@ -76,13 +82,19 @@ class ConfigurableSelector(QtWidgets.QWidget):
 		self._current_index = index
 		current_object = self.current_object()
 		self._conf_properties.populate_configurations(current_object)
+		if self._conf_properties.settings_count > 0:
+			self._enable_collapsible_feature()
+		else:
+			self._disable_collapsible_feature()
 		self.eventObjectSelected.emit(current_object)
 
-	def current_object(self):
-		if len(self._objects) > 0:
-			return self._objects[self._current_index]
-		else:
-			return None
+	def _disable_collapsible_feature(self):
+		self._toggle_button.hide()
+		self._conf_properties.hide()
+
+	def _enable_collapsible_feature(self):
+		self._toggle_button.show()
+		self._conf_properties.show()
 
 	@QtCore.Slot()
 	def _collapse_or_expand(self, expand):

@@ -1,3 +1,4 @@
+import os
 from PySide2 import QtWidgets, QtCore
 from propsettings_qt.ui_settings_area import SettingsAreaWidget
 from pyrulo import class_imports
@@ -15,6 +16,7 @@ class ConfigurableSelector(QtWidgets.QWidget):
 		super(ConfigurableSelector, self).__init__(parent)
 		self._dir_key = dir_key
 		self._objects = []
+		self._custom_object = None
 		self._current_index = 0
 
 		layout = QtWidgets.QVBoxLayout(self)
@@ -32,7 +34,6 @@ class ConfigurableSelector(QtWidgets.QWidget):
 		self._combobox = QtWidgets.QComboBox(self)
 		self._combobox.currentIndexChanged.connect(self._selection_changed)
 		self._combobox.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-		# self.layout().addWidget(self._combobox)
 
 		combobox_containter = QtWidgets.QWidget()
 		combobox_containter_layout = QtWidgets.QHBoxLayout()
@@ -50,8 +51,12 @@ class ConfigurableSelector(QtWidgets.QWidget):
 		self._populate_objects()
 
 	def current_object(self):
-		if len(self._objects) > 0:
-			return self._objects[self._current_index]
+		objects_count = len(self._objects)
+		if objects_count > 0:
+			if self._current_index == objects_count:
+				return self._custom_object
+			else:
+				return self._objects[self._current_index]
 		else:
 			return None
 
@@ -70,15 +75,30 @@ class ConfigurableSelector(QtWidgets.QWidget):
 		Inicializar el combobox.
 		:return:
 		"""
+		self._clear_objects()
 		classes = class_imports.import_classes_by_key(self._dir_key)
 		classes = sorted(classes, key=lambda cls: str(cls))
 		for cls in classes:
 			instance = cls()
 			self._objects.append(instance)
 			self._combobox.addItem(str(instance))
+		self._combobox.addItem(self.tr("Custom script..."))
 		self.eventObjectSelected.emit(self.current_object())
 
+	def _clear_objects(self):
+		self._objects.clear()
+		self._custom_object = None
+		self._combobox.clear()
+		self._conf_properties.clear()
+
 	def _selection_changed(self, index):
+		if index == len(self._objects):
+			custom_object = self._load_object_from_custom_script()
+			if custom_object is None:
+				self._combobox.setCurrentIndex(self._current_index)
+				return
+			self._custom_object = custom_object
+
 		self._current_index = index
 		current_object = self.current_object()
 		self._conf_properties.populate_configurations(current_object)
@@ -87,6 +107,24 @@ class ConfigurableSelector(QtWidgets.QWidget):
 		else:
 			self._disable_collapsible_feature()
 		self.eventObjectSelected.emit(current_object)
+
+	def _load_object_from_custom_script(self):
+		file_path, file_filter = QtWidgets.QFileDialog.getOpenFileName(
+			self,
+			self.tr("Select custom script"),
+			os.getcwd(),
+			"Python script (*.py)"
+		)
+		if file_path != "":
+			classes = class_imports.import_classes_in_specific_script_by_key(file_path, self._dir_key)
+			if len(classes) > 0:
+				first_class = classes[0]
+				return first_class()
+			else:
+				QtWidgets.QErrorMessage.showMessage(self.tr("Invalid script"))
+				return None
+		else:
+			return None
 
 	def _disable_collapsible_feature(self):
 		self._toggle_button.hide()

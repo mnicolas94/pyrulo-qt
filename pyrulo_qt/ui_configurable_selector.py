@@ -1,5 +1,5 @@
 import os
-from PySide2 import QtWidgets, QtCore
+from PySide2 import QtWidgets, QtCore, QtGui
 from propsettings_qt.ui_settings_area import SettingsAreaWidget
 from pyrulo import class_imports
 
@@ -43,10 +43,42 @@ class ConfigurableSelector(QtWidgets.QWidget):
 		combobox_containter_layout.addWidget(self._combobox)
 		layout.addWidget(combobox_containter)
 
+		self._custom_script_widget = QtWidgets.QWidget()
+		custom_script_widget_layout = QtWidgets.QVBoxLayout()
+		custom_script_widget_layout.setContentsMargins(0, 0, 0, 0)
+		self._custom_script_widget.setLayout(custom_script_widget_layout)
+		self._custom_script_widget.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+		self._script_dir_widget = QtWidgets.QWidget()
+		script_dir_widget_layout = QtWidgets.QHBoxLayout()
+		script_dir_widget_layout.setContentsMargins(0, 0, 0, 0)
+		self._script_dir_widget.setLayout(script_dir_widget_layout)
+		self._script_dir_label = QtWidgets.QLabel()
+		self._script_dir_label.setText(self.tr("Script not selected"))
+		self._script_dir_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+		self._script_dir_button = QtWidgets.QPushButton()
+		self._script_dir_button.setIcon(self.style().standardIcon(QtWidgets.QStyle.SP_DialogOpenButton))
+		self._script_dir_button.clicked.connect(self._load_object_from_custom_script)
+		self._script_dir_widget.layout().addWidget(self._script_dir_label)
+		self._script_dir_widget.layout().addWidget(self._script_dir_button)
+		self._script_class_name_label = QtWidgets.QLabel()
+		self._script_class_name_label.setText(self.tr("None"))
+		custom_script_widget_layout.addWidget(self._script_dir_widget)
+		custom_script_widget_layout.addWidget(self._script_class_name_label)
+		self._custom_script_widget.hide()
+		layout.addWidget(self._custom_script_widget)
+
+		self._collapsible_widget = QtWidgets.QWidget()
+		collapsible_widget_layout = QtWidgets.QVBoxLayout()
+		collapsible_widget_layout.setContentsMargins(0, 0, 0, 0)
+		self._collapsible_widget.setLayout(collapsible_widget_layout)
+		self._collapsible_widget.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+		layout.addWidget(self._collapsible_widget)
+
 		self._conf_properties = SettingsAreaWidget()
 		self._conf_properties.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
-		self._conf_properties.hide()
-		self.layout().addWidget(self._conf_properties)
+		self._collapsible_widget.layout().addWidget(self._conf_properties)
+
+		self._collapsible_widget.hide()
 
 		self._populate_objects()
 
@@ -93,13 +125,14 @@ class ConfigurableSelector(QtWidgets.QWidget):
 
 	def _selection_changed(self, index):
 		if index == len(self._objects):
-			custom_object = self._load_object_from_custom_script()
-			if custom_object is None:
-				self._combobox.setCurrentIndex(self._current_index)
-				return
-			self._custom_object = custom_object
+			self._custom_script_widget.show()
+		else:
+			self._custom_script_widget.hide()
 
 		self._current_index = index
+		self._populate_current_object_properties()
+
+	def _populate_current_object_properties(self):
 		current_object = self.current_object()
 		self._conf_properties.populate_configurations(current_object)
 		if self._conf_properties.settings_count > 0:
@@ -119,16 +152,28 @@ class ConfigurableSelector(QtWidgets.QWidget):
 			classes = class_imports.import_classes_in_specific_script_by_key(file_path, self._dir_key)
 			if len(classes) > 0:
 				first_class = classes[0]
-				return first_class()
+				self._custom_object = first_class()
+				self._update_custom_script_texts(file_path, first_class.__name__)
 			else:
-				QtWidgets.QErrorMessage.showMessage(self.tr("Invalid script"))
-				return None
-		else:
-			return None
+				QtWidgets.QMessageBox.critical(
+					self,
+					self.tr("Error"),
+					self.tr("Invalid script"),
+					QtWidgets.QMessageBox.StandardButton.Ok)
+		self._populate_current_object_properties()
+
+	def _update_custom_script_texts(self, file_path, class_name):
+		metrics = QtGui.QFontMetrics(self._script_dir_label.font())
+		elided_text = metrics.elidedText(
+			file_path,
+			QtCore.Qt.TextElideMode.ElideMiddle,
+			self._script_dir_label.width())
+		self._script_dir_label.setText(elided_text)
+		self._script_class_name_label.setText(class_name)
 
 	def _disable_collapsible_feature(self):
 		self._toggle_button.hide()
-		self._conf_properties.hide()
+		self._collapsible_widget.hide()
 
 	def _enable_collapsible_feature(self):
 		self._toggle_button.show()
@@ -138,9 +183,9 @@ class ConfigurableSelector(QtWidgets.QWidget):
 		arrow_type = QtCore.Qt.DownArrow if expand else QtCore.Qt.RightArrow
 		self._toggle_button.setArrowType(arrow_type)
 		if expand:
-			self._conf_properties.show()
+			self._collapsible_widget.show()
 		else:
-			self._conf_properties.hide()
+			self._collapsible_widget.hide()
 
 
 if __name__ == '__main__':

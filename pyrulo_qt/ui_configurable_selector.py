@@ -134,8 +134,8 @@ class ConfigurableSelector(QtWidgets.QWidget):
 
 	def _populate_current_object_properties(self):
 		current_object = self.current_object()
-		self._conf_properties.populate_configurations(current_object)
-		if self._conf_properties.settings_count > 0:
+		self._conf_properties.populate_object(current_object)
+		if self._conf_properties.children_count > 0:
 			self._enable_collapsible_feature()
 		else:
 			self._disable_collapsible_feature()

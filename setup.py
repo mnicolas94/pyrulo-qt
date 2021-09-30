@@ -51,7 +51,7 @@ if __name__ == '__main__':
             url="https://github.com/mnicolas94/pyrulo-qt",
             packages=['pyrulo_qt'],
             install_requires=[
-                'propsettings-qt',
+                'propsettings-qt>=0.2.0',
                 'pyrulo',
                 'PySide2',
             ],

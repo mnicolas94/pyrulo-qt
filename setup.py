@@ -63,4 +63,6 @@ if __name__ == '__main__':
                 'Intended Audience :: Developers',
             ],
             python_requires='>=3.6',
+            include_package_data=True,
+            package_data={'': ['*.ui']},
         )

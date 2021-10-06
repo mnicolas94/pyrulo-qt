@@ -17,7 +17,7 @@ class AlgorithmsSelector(QtWidgets.QDialog):
         self._algorithm_types = algorithm_types
         self._selectors: Dict[str, ConfigurableSelector] = {}
 
-        ui_file_path = os.path.join(Path(__file__).parent, 'algorithms_selector_ui.py')
+        ui_file_path = os.path.join(Path(__file__).parent, 'algorithms_selector.ui')
         self._widget = self.setup_widget_from_ui(ui_file_path, self)
 
         self._container: QtWidgets.QWidget = self._widget.container

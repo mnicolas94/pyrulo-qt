@@ -186,23 +186,3 @@ class ConfigurableSelector(QtWidgets.QWidget):
 			self._collapsible_widget.show()
 		else:
 			self._collapsible_widget.hide()
-
-
-if __name__ == '__main__':
-	import sys
-	from PySide2.QtWidgets import QApplication
-	from PySide2.QtWidgets import QWidget, QVBoxLayout
-
-	app = QApplication(sys.argv)
-
-	window = QWidget()
-	window.setMinimumSize(100, 100)
-	layout = QVBoxLayout()
-	window.setLayout(layout)
-
-	selector = ConfigurableSelector("iu")
-	layout.addWidget(selector)
-
-	window.show()
-
-	sys.exit(app.exec_())

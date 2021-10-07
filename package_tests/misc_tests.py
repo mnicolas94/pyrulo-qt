@@ -21,7 +21,8 @@ if __name__ == '__main__':
     classes_path = str(Path(__file__).parent)
     class_imports.register_classes_dir_by_key("key", classes_path, Base, False)
 
-    selector = ConfigurableSelector("key")
+    # selector = ConfigurableSelector("key")
+    selector = ConfigurableSelector(base_class=Base)
     layout.addWidget(selector)
 
     window.show()

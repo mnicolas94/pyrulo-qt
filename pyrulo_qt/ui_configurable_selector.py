@@ -126,6 +126,11 @@ class ConfigurableSelector(QtWidgets.QWidget):
         else:
             raise TypeError(f"Class {clazz} must be present in this selector and object {obj} must be of type {clazz}.")
 
+    def select_class(self, clazz: type):
+        if clazz in self._classes:
+            index = self._classes.index(clazz)
+            self._combobox.setCurrentIndex(index)
+
     def _populate_objects(self):
         """
         Inicializar el combobox.

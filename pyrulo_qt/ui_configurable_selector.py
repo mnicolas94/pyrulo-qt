@@ -123,6 +123,9 @@ class ConfigurableSelector(QtWidgets.QWidget):
         """
         if clazz in self._classes and isinstance(obj, clazz):
             self._objects[clazz] = obj
+            class_index = self._classes.index(clazz)
+            if self._combobox.currentIndex() == class_index:
+                self._populate_current_object_properties()
         else:
             raise TypeError(f"Class {clazz} must be present in this selector and object {obj} must be of type {clazz}.")
 

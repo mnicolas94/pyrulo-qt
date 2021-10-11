@@ -131,6 +131,9 @@ class ConfigurableSelector(QtWidgets.QWidget):
             index = self._classes.index(clazz)
             self._combobox.setCurrentIndex(index)
 
+    def set_current_index(self, index: int):
+        self._combobox.setCurrentIndex(index)
+
     def _populate_objects(self):
         """
         Inicializar el combobox.

@@ -23,6 +23,7 @@ if __name__ == '__main__':
     # selector = ConfigurableSelector("key")
     selector = ConfigurableSelector(base_class=Base)
     selector.add_class(ConfigurableSelector)
+    selector.set_object_for_class(ConfigurableSelector, selector)
     selector.select_class(ConfigurableSelector)
     layout.addWidget(selector)
 

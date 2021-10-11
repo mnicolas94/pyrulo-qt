@@ -109,6 +109,21 @@ class ConfigurableSelector(QtWidgets.QWidget):
         self._dir_key = dir_key
         self._populate_objects()
 
+    def add_class(self, clazz: type):
+        if clazz not in self._classes:
+            self._classes.append(clazz)
+
+    def set_object_for_class(self, clazz: type, obj):
+        """
+        Set the object value for a given class.
+        :param clazz:
+        :return:
+        """
+        if clazz in self._classes and isinstance(obj, clazz):
+            self._objects[clazz] = obj
+        else:
+            raise TypeError(f"Class {clazz} must be present in this selector and object {obj} must be of type {clazz}.")
+
     def _populate_objects(self):
         """
         Inicializar el combobox.

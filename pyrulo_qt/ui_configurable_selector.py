@@ -19,6 +19,7 @@ class ConfigurableSelector(QtWidgets.QWidget):
         self._base_class = base_class
         self._dir_key_based = dir_key is not None
         self._classes = []
+        self._added_classes = []
         self._objects = {}
         self._custom_object = None
         self._current_index = 0
@@ -111,7 +112,8 @@ class ConfigurableSelector(QtWidgets.QWidget):
 
     def add_class(self, clazz: type):
         if clazz not in self._classes:
-            self._classes.append(clazz)
+            self._added_classes.append(clazz)
+            self._populate_objects()
 
     def set_object_for_class(self, clazz: type, obj):
         """
@@ -132,6 +134,7 @@ class ConfigurableSelector(QtWidgets.QWidget):
         self._clear_objects()
         classes = self._get_classes()
         classes = sorted(classes, key=lambda cls: str(cls))
+        classes.extend(self._added_classes)
         for cls in classes:
             self._classes.append(cls)
             self._combobox.addItem(cls.__name__)

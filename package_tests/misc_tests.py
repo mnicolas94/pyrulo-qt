@@ -5,7 +5,6 @@ from package_tests.test_classes import Base
 
 
 if __name__ == '__main__':
-    import os
     import sys
     from pathlib import Path
     from PySide2.QtWidgets import QApplication
@@ -23,6 +22,7 @@ if __name__ == '__main__':
 
     # selector = ConfigurableSelector("key")
     selector = ConfigurableSelector(base_class=Base)
+    selector.add_class(ConfigurableSelector)
     layout.addWidget(selector)
 
     window.show()

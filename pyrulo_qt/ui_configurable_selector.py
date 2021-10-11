@@ -18,7 +18,8 @@ class ConfigurableSelector(QtWidgets.QWidget):
         self._dir_key = dir_key
         self._base_class = base_class
         self._dir_key_based = dir_key is not None
-        self._objects = []
+        self._classes = []
+        self._objects = {}
         self._custom_object = None
         self._current_index = 0
 
@@ -86,12 +87,15 @@ class ConfigurableSelector(QtWidgets.QWidget):
         self._populate_objects()
 
     def current_object(self):
-        objects_count = len(self._objects)
-        if objects_count > 0:
-            if self._current_index == objects_count:
+        classes_count = len(self._classes)
+        if classes_count > 0:
+            if self._current_index == classes_count:
                 return self._custom_object
             else:
-                return self._objects[self._current_index]
+                clazz = self._classes[self._current_index]
+                if clazz not in self._objects:
+                    self._objects[clazz] = clazz()
+                return self._objects[clazz]
         else:
             return None
 
@@ -114,20 +118,20 @@ class ConfigurableSelector(QtWidgets.QWidget):
         classes = self._get_classes()
         classes = sorted(classes, key=lambda cls: str(cls))
         for cls in classes:
-            instance = cls()
-            self._objects.append(instance)
-            self._combobox.addItem(str(instance))
+            self._classes.append(cls)
+            self._combobox.addItem(cls.__name__)
         self._combobox.addItem(self.tr("Custom script..."))
         self.eventObjectSelected.emit(self.current_object())
 
     def _clear_objects(self):
+        self._classes.clear()
         self._objects.clear()
         self._custom_object = None
         self._combobox.clear()
         self._conf_properties.clear()
 
     def _selection_changed(self, index):
-        if index == len(self._objects):
+        if index == len(self._classes):
             self._custom_script_widget.show()
         else:
             self._custom_script_widget.hide()

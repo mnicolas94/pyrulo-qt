@@ -232,7 +232,7 @@ class ConfigurableSelector(QtWidgets.QWidget):
 
     def _get_specific_file_classes(self, file_path):
         if self._dir_key_based:
-            classes = class_imports.import_classes_in_specific_script_by_key(file_path, self._dir_key)
+            classes = class_imports.import_classes_in_file_by_key(file_path, self._dir_key)
         else:
-            classes = class_imports.import_classes_in_specific_script(file_path, self._base_class)
+            classes = class_imports.import_classes_in_file(file_path, self._base_class)
         return classes

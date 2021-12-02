@@ -52,7 +52,7 @@ if __name__ == '__main__':
             packages=['pyrulo_qt'],
             install_requires=[
                 'propsettings-qt>=0.2.0',
-                'pyrulo',
+                'pyrulo>=0.2.4',
                 'PySide2',
             ],
             classifiers=[

@@ -69,3 +69,5 @@ selector = ConfigurableSelector(base_class=Base)  # Qt widget to select the chil
 The resulting widget looks like this
 
 ![example](docs/example.jpg)
+
+Pyrulo-qt uses [propsettings-qt](https://github.com/mnicolas94/propsettings_qt) to render the object if it has [propsettings](https://github.com/mnicolas94/propsettings)'s Settings registered.

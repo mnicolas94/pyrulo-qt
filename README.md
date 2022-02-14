@@ -67,4 +67,7 @@ class_imports.import_classes_in_dir(folder_dir, Base)  # first import the classe
 selector = ConfigurableSelector(base_class=Base)  # Qt widget to select the child classes
 ```
 The resulting widget looks like this
+
 ![example](docs/example.jpg)
+
+Pyrulo-qt uses [propsettings-qt](https://github.com/mnicolas94/propsettings_qt) to render the object if it has [propsettings](https://github.com/mnicolas94/propsettings)'s Settings registered.

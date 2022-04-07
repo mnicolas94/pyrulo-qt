@@ -7,9 +7,11 @@ from pyrulo_qt.selector_setting_type import ClassSelector
 
 class ClassSelectorSettingDrawer(SettingDrawer):
 
-    def __init__(self, selector: ClassSelector, setting_owner, setting: Setting):
+    def __init__(self, setting_owner, setting: Setting):
+        if not isinstance(setting.setting_type, ClassSelector):
+            raise TypeError(f"Setting type {setting.setting_type} is not of type ClassSelector")
         super(ClassSelectorSettingDrawer, self).__init__(setting_owner, setting)
-        self._selector = selector
+        self._selector: ClassSelector = setting.setting_type
 
         self._selector_widget = DrawerConfigurableSelector(self, base_class=self._selector.base_class)
         self._selector_widget.eventObjectSelected.connect(self._on_object_selected)
